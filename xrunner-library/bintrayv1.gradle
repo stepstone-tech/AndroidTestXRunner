@@ -1,0 +1,32 @@
+apply plugin: 'com.jfrog.bintray'
+
+version = libraryVersion
+
+// Bintray
+File propertiesFile = project.rootProject.file('local.properties')
+if (propertiesFile.exists()) {
+    Properties properties = new Properties()
+    properties.load(propertiesFile.newDataInputStream())
+
+    bintray {
+        user = properties.getProperty("bintray.user")
+        key = properties.getProperty("bintray.apikey")
+
+        publications = ['MyPublication']
+
+        pkg {
+            repo = bintrayRepo
+            name = bintrayName
+            desc = libraryDescription
+            websiteUrl = siteUrl
+            vcsUrl = gitUrl
+            licenses = allLicenses
+            dryRun = false
+            publish = true
+            publicDownloadNumbers = true
+            version {
+                desc = libraryDescription
+            }
+        }
+    }
+}
