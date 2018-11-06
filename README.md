@@ -71,3 +71,9 @@ Here are some samples:
 ```bash
 ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.xrunnerPackage=com.stepstone.xrunner.sample -Pandroid.testInstrumentationRunnerArguments.xrunnerNotPackage=com.stepstone.xrunner.sample.dummy
 ```
+
+# Compatibility
+
+| XRunner version | Test runner version                     |
+|:---------------:|:---------------------------------------:|
+| 1.0.0           | `com.android.support.test:runner:1.0.2` |
