@@ -28,7 +28,7 @@ import de.jodamob.reflect.SuperReflect
 import org.junit.runner.Description
 import org.junit.runner.notification.RunListener
 
-class AndroidJUnitXRunner : AndroidJUnitRunner() {
+open class AndroidJUnitXRunner : AndroidJUnitRunner() {
 
     companion object {
         private const val TAG = "XRunner"
