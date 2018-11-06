@@ -1,6 +1,6 @@
 package com.stepstone.xrunner.internal
 
-import android.support.test.orchestrator.instrumentationlistener.OrchestratedInstrumentationListener
+import androidx.test.orchestrator.instrumentationlistener.OrchestratedInstrumentationListener
 import org.junit.runner.Description
 import org.junit.runner.Result
 import org.junit.runner.notification.Failure

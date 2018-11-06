@@ -1,10 +1,10 @@
 package com.stepstone.xrunner
 
 import android.os.Bundle
-import android.support.test.internal.runner.RunnerArgs
-import android.support.test.internal.runner.TestRequestBuilder
-import android.support.test.orchestrator.instrumentationlistener.OrchestratedInstrumentationListener
-import android.support.test.runner.AndroidJUnitRunner
+import androidx.test.internal.runner.RunnerArgs
+import androidx.test.internal.runner.TestRequestBuilder
+import androidx.test.orchestrator.instrumentationlistener.OrchestratedInstrumentationListener
+import androidx.test.runner.AndroidJUnitRunner
 import android.util.Log
 import com.stepstone.xrunner.internal.ARGUMENT_CLASS
 import com.stepstone.xrunner.internal.ARGUMENT_LIST_TESTS_FOR_ORCHESTRATOR
@@ -33,8 +33,8 @@ open class AndroidJUnitXRunner : AndroidJUnitRunner() {
     companion object {
         private const val TAG = "XRunner"
 
-        private const val RUNNER_FIELD_ORCHESTRATOR_LISTENER = "mOrchestratorListener"
-        private const val RUNNER_FIELD_RUNNER_ARGS = "mRunnerArgs"
+        private const val RUNNER_FIELD_ORCHESTRATOR_LISTENER = "orchestratorListener"
+        private const val RUNNER_FIELD_RUNNER_ARGS = "runnerArgs"
         private const val RUNNER_METHOD_CREATE_TEST_REQUEST_BUILDER = "createTestRequestBuilder"
         private const val RUNNER_ARGS_FIELD_LISTENERS = "listeners"
     }
