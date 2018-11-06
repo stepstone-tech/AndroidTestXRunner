@@ -2,6 +2,13 @@
 
 This library allows you to run Android UI tests multiple times in a single instrumentation execution. Written in Kotlin.
 
+# Why use it?
+Let's face it - instrumentation tests can be flaky. Even if your brand new test passes the first time you run it on a device, it doesn't mean that it won't fail if you run it again. Therefore, it's a good practice to try it at least a couple of times just to be sure.
+
+Common approaches are to either run the test over and over again via e.g. consecutive `./gradlew connectedDebugAndroidTest` calls or to copy-paste that test with different names and run the test suite once. Neither one of these is perfect and that's where Android Test XRunner comes into play.
+
+It heavily depends on [Android Test Orchestrator](https://medium.com/stepstone-tech/android-test-orchestrator-unmasked-83b8879928fa), which it "tricks" to execute same tests multiple times.
+
 # Getting started
 
 ## Setup
