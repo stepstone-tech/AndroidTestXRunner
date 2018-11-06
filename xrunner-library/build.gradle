@@ -26,7 +26,7 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
-    implementation "com.android.support.test:runner:$TEST_RUNNER_VERSION"
+    implementation "androidx.test:runner:$TEST_RUNNER_VERSION"
     implementation "de.jodamob.android:SuperReflect:$SUPER_REFLEKT_VERSION"
 }
 
@@ -67,7 +67,7 @@ ext {
     siteUrl = 'https://github.com/stepstone-tech/AndroidTestXRunner'
     gitUrl = 'https://github.com/stepstone-tech/AndroidTestXRunner.git'
 
-    libraryVersion = '1.0.0'
+    libraryVersion = '2.0.0'
 
     licenseName = 'The Apache Software License, Version 2.0'
     licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'

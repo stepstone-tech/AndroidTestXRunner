@@ -21,20 +21,21 @@ android {
         }
     }
     testOptions {
-        execution 'ANDROID_TEST_ORCHESTRATOR'
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
         animationsDisabled = true
     }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
-    implementation "com.android.support:appcompat-v7:$APPCOMPAT_VERSION"
-    implementation "com.android.support.constraint:constraint-layout:$CONSTRAINT_VERSION"
-    implementation "com.android.support:design:$DESIGN_VERSION"
+    implementation "androidx.appcompat:appcompat:$APPCOMPAT_VERSION"
+    implementation "androidx.constraintlayout:constraintlayout:$CONSTRAINT_VERSION"
+    implementation "com.google.android.material:material:$MATERIAL_VERSION"
 
     androidTestImplementation project(':xrunner-library')
 
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$ESPRESSO_VERSION"
-    androidTestImplementation "com.android.support.test:rules:$TEST_RULES_VERSION"
-    androidTestUtil "com.android.support.test:orchestrator:$TEST_ORCHESTRATOR_VERSION"
+    androidTestImplementation "androidx.test.ext:junit:$TEST_EXT_VERSION"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
+    androidTestImplementation "androidx.test:rules:$TEST_RULES_VERSION"
+    androidTestUtil "androidx.test:orchestrator:$TEST_ORCHESTRATOR_VERSION"
 }

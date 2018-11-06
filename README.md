@@ -15,8 +15,10 @@ It heavily depends on [Android Test Orchestrator](https://medium.com/stepstone-t
 ### 1. Add a Gradle dependency in your `build.gradle`
 
 ```groovy
-implementation 'com.stepstone.xrunner:xrunner-library:1.0.0'
+implementation 'com.stepstone.xrunner:xrunner-library:2.0.0'
 ```
+
+*NOTE:* not on AndroidX yet? See *Compatibility* section at the bottom.
 
 ### 2. Use AndroidJUnitXRunner instead of your runner
 
@@ -39,12 +41,12 @@ XRunner relies on Android Test Orchestrator therefore Android Test Orchestrator 
 android {
     
     testOptions {
-        execution 'ANDROID_TEST_ORCHESTRATOR'
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
 }
     
 dependencies {
-    androidTestUtil 'com.android.support.test:orchestrator:1.0.2'
+    androidTestUtil 'androidx.test:orchestrator:1.1.0'
 }
 ```
 
@@ -81,6 +83,7 @@ Here are some samples:
 
 # Compatibility
 
-| XRunner version | Test runner version                     |
-|:---------------:|:---------------------------------------:|
-| 1.0.0           | `com.android.support.test:runner:1.0.2` |
+| XRunner version                                                          | Test runner version                     |
+|:------------------------------------------------------------------------:|:---------------------------------------:|
+| [2.0.0](https://github.com/stepstone-tech/AndroidTestXRunner/tree/2.0.0) | `androidx.test:runner:1.1.0`            |
+| [1.0.0](https://github.com/stepstone-tech/AndroidTestXRunner/tree/1.0.0) | `com.android.support.test:runner:1.0.2` |
