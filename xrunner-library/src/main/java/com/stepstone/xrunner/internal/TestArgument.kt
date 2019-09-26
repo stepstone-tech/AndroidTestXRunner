@@ -31,7 +31,7 @@ fun parseTestClass(name: String?): TestArgument? {
     if (name.isNullOrEmpty()) {
         return null
     }
-    val methodSeparatorIndex = name!!.indexOf(METHOD_SEPARATOR)
+    val methodSeparatorIndex = name.indexOf(METHOD_SEPARATOR)
     return if (methodSeparatorIndex > 0) {
         val testMethodName = name.substring(methodSeparatorIndex + 1)
         val testClassName = name.substring(0, methodSeparatorIndex)

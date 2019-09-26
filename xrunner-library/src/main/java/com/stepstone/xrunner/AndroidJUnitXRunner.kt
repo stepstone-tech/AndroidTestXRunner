@@ -72,6 +72,19 @@ open class AndroidJUnitXRunner : AndroidJUnitRunner() {
         super.onStart()
     }
 
+    fun getTestDescriptionFromBundle(bundle: Bundle): Description {
+        val runnerArgs = getRunnerArgsWithReflection()
+        val builder: TestRequestBuilder = SuperReflect.on(this).call(RUNNER_METHOD_CREATE_TEST_REQUEST_BUILDER, this, bundle).get()
+        builder.addPathsToScan(runnerArgs.classpathToScan)
+        if (runnerArgs.classpathToScan.isEmpty()) {
+            builder.addPathToScan(context.packageCodePath)
+        }
+        builder.addFromRunnerArgs(runnerArgs)
+        val request = builder.build()
+        return request.runner.description
+    }
+
+    @Suppress("DEPRECATION")
     private fun isPrimaryInstrumentationProcess(): Boolean = isPrimaryInstrProcess(originalBundle.getString(ARGUMENT_TARGET_PROCESS))
 
     private fun addXRunnerTestsWithOrchestrator(runCount: Int, bundle: Bundle, orchestratorListener: OrchestratedInstrumentationListener) {
@@ -108,18 +121,6 @@ open class AndroidJUnitXRunner : AndroidJUnitRunner() {
          * and it would duplicate what SCXRunnerOrchestratorListenerWrapper is already doing.
          */
         SuperReflect.on(this).set(RUNNER_FIELD_ORCHESTRATOR_LISTENER, null)
-    }
-
-    private fun getTestDescriptionFromBundle(bundle: Bundle): Description {
-        val runnerArgs = getRunnerArgsWithReflection()
-        val builder: TestRequestBuilder = SuperReflect.on(this).call(RUNNER_METHOD_CREATE_TEST_REQUEST_BUILDER, this, bundle).get()
-        builder.addPathsToScan(runnerArgs.classpathToScan)
-        if (runnerArgs.classpathToScan.isEmpty()) {
-            builder.addPathToScan(context.packageCodePath)
-        }
-        builder.addFromRunnerArgs(runnerArgs)
-        val request = builder.build()
-        return request.runner.description
     }
 
     private fun getRunnerArgsWithReflection() = SuperReflect.on(this).get<RunnerArgs>(RUNNER_FIELD_RUNNER_ARGS)

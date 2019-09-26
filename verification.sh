@@ -37,4 +37,5 @@ echo "Test package run OK!"
 verifyJUnitReport 15 3 3
 echo "Test package with exclusions run OK!"
 
-./gradlew clean assembleRelease publishToMavenLocal
+./gradlew clean assembleRelease
+./gradlew publishToMavenLocal
