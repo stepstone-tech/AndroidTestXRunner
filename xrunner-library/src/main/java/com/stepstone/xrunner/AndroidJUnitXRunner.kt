@@ -10,6 +10,7 @@ import com.stepstone.xrunner.internal.ARGUMENT_CLASS
 import com.stepstone.xrunner.internal.ARGUMENT_LIST_TESTS_FOR_ORCHESTRATOR
 import com.stepstone.xrunner.internal.ARGUMENT_NOT_CLASS
 import com.stepstone.xrunner.internal.ARGUMENT_NOT_PACKAGE
+import com.stepstone.xrunner.internal.ARGUMENT_ORCHESTRATOR_DISCOVERY_SERVICE
 import com.stepstone.xrunner.internal.ARGUMENT_PACKAGE
 import com.stepstone.xrunner.internal.ARGUMENT_TARGET_PROCESS
 import com.stepstone.xrunner.internal.OrchestratorListenerWrapper
@@ -103,15 +104,18 @@ open class AndroidJUnitXRunner : AndroidJUnitRunner() {
     }
 
     private fun shouldUpdateTestSuiteForXRunner(): Boolean {
-        // TODO: 12/08/2021 check for orchestration V2
         val listTestsForOrchestrator = (originalBundle.getString(ARGUMENT_LIST_TESTS_FOR_ORCHESTRATOR, false.toString())!!).toBoolean()
-        return listTestsForOrchestrator && isPrimaryInstrumentationProcess() && shouldUseXRunner(originalBundle)
+        val testDiscoveryForOrchestratorV2Provided = !originalBundle.getString(ARGUMENT_ORCHESTRATOR_DISCOVERY_SERVICE).isNullOrEmpty()
+        return isPrimaryInstrumentationProcess() &&
+            (testDiscoveryForOrchestratorV2Provided || listTestsForOrchestrator) &&
+            shouldUseXRunner(originalBundle)
     }
 
     private fun updateListenersBeforeXRunnerTestExecution(testEventClient: TestEventClient) {
         val runnerArgs = getRunnerArgsWithReflection()
         SuperReflect.on(runnerArgs).set(
-            RUNNER_ARGS_FIELD_LISTENERS, mutableListOf<RunListener>(
+            RUNNER_ARGS_FIELD_LISTENERS,
+            mutableListOf<RunListener>(
                 OrchestratorListenerWrapper(
                     testEventClient.runListener!!,
                     originalTestToRun

@@ -1,6 +1,7 @@
 package com.stepstone.xrunner.internal
 
 import android.os.Bundle
+import kotlin.math.max
 
 private const val XRUNNER_DEFAULT_COUNT = "10"
 
@@ -8,11 +9,12 @@ fun getClassArgument(bundle: Bundle): String? = bundle.getString(ARGUMENT_CLASS)
 
 fun isXRunnerTestExecution(bundle: Bundle): Boolean = isXRunnerTest(getClassArgument(bundle))
 
-fun getXRunnerCountArgument(bundle: Bundle): Int = Math.max(
+fun getXRunnerCountArgument(bundle: Bundle): Int = max(
     bundle.getString(
         ARGUMENT_XRUNNER_COUNT,
         XRUNNER_DEFAULT_COUNT
-    ).toInt(), 0
+    ).toInt(),
+    0
 )
 
 fun shouldUseXRunner(bundle: Bundle): Boolean = !getXRunnerClassArgument(bundle).isNullOrEmpty() ||
