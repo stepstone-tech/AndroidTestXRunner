@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.dokka-android'
+apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'maven-publish'
 
 apply from: '../ktlint.gradle'
@@ -30,30 +30,6 @@ dependencies {
     implementation "de.jodamob.android:SuperReflect:$SUPER_REFLEKT_VERSION"
 }
 
-dokka {
-    outputDirectory = "$rootDir/docs"
-}
-
-task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaAndroidTask) {
-    delete "$buildDir/docs"
-
-    outputFormat = 'javadoc'
-    outputDirectory = "$buildDir/docs"
-
-    externalDocumentationLink {
-        url = new URL("https://developer.android.com/reference/")
-    }
-
-    // Always recreate documentation
-    outputs.upToDateWhen { return false }
-}
-
-afterEvaluate {
-    if (project.hasProperty("javadocJar")) {
-        tasks.javadocJar.dependsOn dokkaJavadoc
-    }
-}
-
 ext {
     bintrayRepo = 'maven'
     bintrayName = 'android-test-xrunner'
@@ -74,28 +50,22 @@ ext {
     allLicenses = ["Apache-2.0"]
 }
 
-
-tasks.withType(Javadoc) {
-    excludes = ['**/*.kt']
-}
-
 task sourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.java.srcDirs
 }
 
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+dokkaJavadoc.configure {
+    dokkaSourceSets {
+        named("main") {
+            noAndroidSdkLink.set(false)
+        }
+    }
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-
-    // Always recreate documentation
-    outputs.upToDateWhen { return false }
-
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
     classifier = 'javadoc'
-    from new File("$buildDir/docs")
+    from "$buildDir/dokka/javadoc"
 }
 
 publishing {
@@ -108,6 +78,7 @@ publishing {
 
             groupId publishedGroupId
             artifactId artifact
+            version libraryVersion
 
             pom {
                 packaging 'aar'
@@ -148,7 +119,5 @@ publishing {
         }
     }
 }
-// Bintray Upload
-apply from: 'bintrayv1.gradle'
 
 publishToMavenLocal.dependsOn 'assembleRelease'
