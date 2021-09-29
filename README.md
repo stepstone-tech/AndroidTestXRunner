@@ -85,6 +85,7 @@ Here are some samples:
 
 | XRunner version                                                          | Test runner version                     |
 |:------------------------------------------------------------------------:|:---------------------------------------:|
+| [X.Y.Z](https://github.com/stepstone-tech/AndroidTestXRunner/tree/X.Y.Z) | `androidx.test:runner:1.4.0`            |
 | [2.1.0](https://github.com/stepstone-tech/AndroidTestXRunner/tree/2.1.0) | `androidx.test:runner:1.2.0`            |
 | [2.0.0](https://github.com/stepstone-tech/AndroidTestXRunner/tree/2.0.0) | `androidx.test:runner:1.1.0`            |
 | [1.0.0](https://github.com/stepstone-tech/AndroidTestXRunner/tree/1.0.0) | `com.android.support.test:runner:1.0.2` |

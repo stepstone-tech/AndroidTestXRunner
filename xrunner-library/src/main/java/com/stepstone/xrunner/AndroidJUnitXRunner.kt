@@ -1,15 +1,16 @@
 package com.stepstone.xrunner
 
 import android.os.Bundle
+import android.util.Log
+import androidx.test.internal.events.client.TestEventClient
 import androidx.test.internal.runner.RunnerArgs
 import androidx.test.internal.runner.TestRequestBuilder
-import androidx.test.orchestrator.instrumentationlistener.OrchestratedInstrumentationListener
 import androidx.test.runner.AndroidJUnitRunner
-import android.util.Log
 import com.stepstone.xrunner.internal.ARGUMENT_CLASS
 import com.stepstone.xrunner.internal.ARGUMENT_LIST_TESTS_FOR_ORCHESTRATOR
 import com.stepstone.xrunner.internal.ARGUMENT_NOT_CLASS
 import com.stepstone.xrunner.internal.ARGUMENT_NOT_PACKAGE
+import com.stepstone.xrunner.internal.ARGUMENT_ORCHESTRATOR_DISCOVERY_SERVICE
 import com.stepstone.xrunner.internal.ARGUMENT_PACKAGE
 import com.stepstone.xrunner.internal.ARGUMENT_TARGET_PROCESS
 import com.stepstone.xrunner.internal.OrchestratorListenerWrapper
@@ -33,7 +34,7 @@ open class AndroidJUnitXRunner : AndroidJUnitRunner() {
     companion object {
         private const val TAG = "XRunner"
 
-        private const val RUNNER_FIELD_ORCHESTRATOR_LISTENER = "orchestratorListener"
+        private const val RUNNER_FIELD_TEST_EVENT_CLIENT = "testEventClient"
         private const val RUNNER_FIELD_RUNNER_ARGS = "runnerArgs"
         private const val RUNNER_METHOD_CREATE_TEST_REQUEST_BUILDER = "createTestRequestBuilder"
         private const val RUNNER_ARGS_FIELD_LISTENERS = "listeners"
@@ -61,13 +62,13 @@ open class AndroidJUnitXRunner : AndroidJUnitRunner() {
     }
 
     override fun onStart() {
-        val orchestratorListener = SuperReflect.on(this).get<OrchestratedInstrumentationListener>(RUNNER_FIELD_ORCHESTRATOR_LISTENER)
+        val testEventClient = SuperReflect.on(this).get<TestEventClient>(RUNNER_FIELD_TEST_EVENT_CLIENT)
 
         if (shouldUpdateTestSuiteForXRunner()) {
             val runCount = getXRunnerCountArgument(modifiedBundle)
-            addXRunnerTestsWithOrchestrator(runCount, modifiedBundle, orchestratorListener)
+            addXRunnerTestsWithOrchestrator(runCount, modifiedBundle, testEventClient)
         } else if (isXRunnerTestExecution(originalBundle)) {
-            updateListenersBeforeXRunnerTestExecution(orchestratorListener)
+            updateListenersBeforeXRunnerTestExecution(testEventClient)
         }
         super.onStart()
     }
@@ -87,7 +88,7 @@ open class AndroidJUnitXRunner : AndroidJUnitRunner() {
     @Suppress("DEPRECATION")
     private fun isPrimaryInstrumentationProcess(): Boolean = isPrimaryInstrProcess(originalBundle.getString(ARGUMENT_TARGET_PROCESS))
 
-    private fun addXRunnerTestsWithOrchestrator(runCount: Int, bundle: Bundle, orchestratorListener: OrchestratedInstrumentationListener) {
+    private fun addXRunnerTestsWithOrchestrator(runCount: Int, bundle: Bundle, testEventClient: TestEventClient) {
         val testDescriptionFromBundle = getTestDescriptionFromBundle(bundle)
         val testsToRerun = getMethodTestArgumentsFromDescription(testDescriptionFromBundle)
 
@@ -98,29 +99,33 @@ open class AndroidJUnitXRunner : AndroidJUnitRunner() {
             .flatMap { testArg -> (1 until runCount).map { createXRunnerTestDescription(testArg, it) }.asSequence() }
             .forEach {
                 Log.d(TAG, "Adding '$it' to test suite")
-                orchestratorListener.addTests(it)
+                testEventClient.addTests(it)
             }
     }
 
     private fun shouldUpdateTestSuiteForXRunner(): Boolean {
         val listTestsForOrchestrator = (originalBundle.getString(ARGUMENT_LIST_TESTS_FOR_ORCHESTRATOR, false.toString())!!).toBoolean()
-        return listTestsForOrchestrator && isPrimaryInstrumentationProcess() && shouldUseXRunner(originalBundle)
+        val testDiscoveryForOrchestratorV2Provided = !originalBundle.getString(ARGUMENT_ORCHESTRATOR_DISCOVERY_SERVICE).isNullOrEmpty()
+        return isPrimaryInstrumentationProcess() &&
+            (testDiscoveryForOrchestratorV2Provided || listTestsForOrchestrator) &&
+            shouldUseXRunner(originalBundle)
     }
 
-    private fun updateListenersBeforeXRunnerTestExecution(orchestratorListener: OrchestratedInstrumentationListener) {
+    private fun updateListenersBeforeXRunnerTestExecution(testEventClient: TestEventClient) {
         val runnerArgs = getRunnerArgsWithReflection()
         SuperReflect.on(runnerArgs).set(
-            RUNNER_ARGS_FIELD_LISTENERS, mutableListOf<RunListener>(
+            RUNNER_ARGS_FIELD_LISTENERS,
+            mutableListOf<RunListener>(
                 OrchestratorListenerWrapper(
-                    orchestratorListener,
+                    testEventClient.runListener!!,
                     originalTestToRun
                 )
             )
         )
-        /* We need to set this listener to null as otherwise it would be added in AndroidJUnitRunner#addListeners()
+        /* We need to set test event client to no-op as otherwise it would be added in AndroidJUnitRunner#addListeners()
          * and it would duplicate what SCXRunnerOrchestratorListenerWrapper is already doing.
          */
-        SuperReflect.on(this).set(RUNNER_FIELD_ORCHESTRATOR_LISTENER, null)
+        SuperReflect.on(this).set(RUNNER_FIELD_TEST_EVENT_CLIENT, TestEventClient.NO_OP_CLIENT)
     }
 
     private fun getRunnerArgsWithReflection() = SuperReflect.on(this).get<RunnerArgs>(RUNNER_FIELD_RUNNER_ARGS)

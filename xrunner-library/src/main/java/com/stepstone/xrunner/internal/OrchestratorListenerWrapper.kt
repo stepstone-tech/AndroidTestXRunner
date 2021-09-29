@@ -1,20 +1,20 @@
 package com.stepstone.xrunner.internal
 
-import androidx.test.orchestrator.instrumentationlistener.OrchestratedInstrumentationListener
+import androidx.test.internal.events.client.OrchestratedInstrumentationListener
 import org.junit.runner.Description
 import org.junit.runner.Result
 import org.junit.runner.notification.Failure
 import org.junit.runner.notification.RunListener
 
 /**
- * This is a wrapper for the original [OrchestratedInstrumentationListener] set in [android.support.test.runner.AndroidJUnitRunner].
+ * This is a wrapper for the original [OrchestratedInstrumentationListener] set in [androidx.test.runner.AndroidJUnitRunner].
  * It's purpose is to report to Android Test Orchestrator correct XRunner test methods e.g.
  * if [com.stepstone.xrunner.AndroidJUnitXRunner] was originally triggered to run "com.android.foo.FooTest#testFoo_XRUNNER_RUN_1"
  * this class would make sure that [OrchestratedInstrumentationListener] would get a test description with "_XRUNNER_RUN_1" suffix.
  * This is because [com.stepstone.xrunner.AndroidJUnitXRunner] removes this suffix when running the test.
  */
 class OrchestratorListenerWrapper(
-    private val orchestratorListener: OrchestratedInstrumentationListener,
+    private val orchestratorListener: RunListener,
     private val originalTestToRun: String?
 ) : RunListener() {
 
