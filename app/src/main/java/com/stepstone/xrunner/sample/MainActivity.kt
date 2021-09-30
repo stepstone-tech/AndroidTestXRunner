@@ -3,19 +3,18 @@ package com.stepstone.xrunner.sample
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
-import kotlinx.android.synthetic.main.activity_main.fab
-import kotlinx.android.synthetic.main.activity_main.toolbar
-import kotlinx.android.synthetic.main.content_main.dummy_text_view
+import com.stepstone.xrunner.sample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        val binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
 
-        fab.setOnClickListener {
-            dummy_text_view.visibility = View.VISIBLE
+        binding.fab.setOnClickListener {
+            binding.content.dummyTextView.visibility = View.VISIBLE
         }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
