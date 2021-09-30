@@ -15,6 +15,10 @@ buildscript {
     }
 }
 
+plugins {
+    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+}
+
 allprojects {
     repositories {
         google()
@@ -45,3 +49,5 @@ configure(allprojects) {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+apply from: "xrunner-library/scripts/publish-root.gradle"

@@ -1,0 +1,92 @@
+// based on https://getstream.io/blog/publishing-libraries-to-mavencentral-2021/
+// & https://gist.github.com/zsmb13/56ed98c8fe916de441f2a9d8e060cd4a
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+apply plugin: 'org.jetbrains.dokka'
+
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+    from android.sourceSets.main.kotlin.srcDirs
+}
+
+tasks.withType(dokkaHtmlPartial.getClass()).configureEach {
+    pluginsMapConfiguration.set(
+            ["org.jetbrains.dokka.base.DokkaBase": """{ "separateInheritedMembers": true}"""]
+    )
+}
+
+dokkaJavadoc.configure {
+    dokkaSourceSets {
+        named("main") {
+            noAndroidSdkLink.set(false)
+        }
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+    archiveClassifier.set('javadoc')
+    from dokkaJavadoc.outputDirectory
+}
+
+artifacts {
+    archives androidSourcesJar
+    archives javadocJar
+}
+
+group = artifactGroupId
+version = libraryVersion
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId artifactGroupId
+                artifactId artifactId
+                version libraryVersion
+                from components.release
+
+                artifact androidSourcesJar
+                artifact javadocJar
+
+                pom {
+                    name = artifactId
+                    description = libraryDescription
+                    url = siteUrl
+                    licenses {
+                        license {
+                            name = licenseName
+                            url = licenseUrl
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'zawadz88'
+                            name = 'Piotr Zawadzki'
+                            email = 'piotr.zawadzki@stepstone.com'
+                        }
+                        developer {
+                            id = 'RobertZagorski'
+                            name = 'Robert Zagórski'
+                            email = 'robert.zagorski@stepstone.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git@github.com:stepstone-tech/AndroidTestXRunner.git'
+                        developerConnection = 'scm:git:ssh://github.com:stepstone-tech/AndroidTestXRunner.git'
+                        url = siteUrl
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    useInMemoryPgpKeys(
+            rootProject.ext["signing.keyId"],
+            rootProject.ext["signing.key"],
+            rootProject.ext["signing.password"],
+    )
+    sign publishing.publications
+}
