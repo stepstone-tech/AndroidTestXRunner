@@ -31,93 +31,24 @@ dependencies {
 }
 
 ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'android-test-xrunner'
-
-    publishedGroupId = 'com.stepstone.xrunner'
+    artifactGroupId = 'com.stepstone.xrunner'
     libraryName = 'Android Test XRunner'
-    artifact = 'xrunner-library'
+    artifactId = 'xrunner-library'
 
     libraryDescription = 'Running UI tests multiple times made easy'
 
     siteUrl = 'https://github.com/stepstone-tech/AndroidTestXRunner'
-    gitUrl = 'https://github.com/stepstone-tech/AndroidTestXRunner.git'
 
-    libraryVersion = '2.1.0'
+    libraryVersion = '2.2.0'
 
     licenseName = 'The Apache Software License, Version 2.0'
     licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    getArchiveClassifier().set("sources")
     from android.sourceSets.main.java.srcDirs
 }
 
-dokkaJavadoc.configure {
-    dokkaSourceSets {
-        named("main") {
-            noAndroidSdkLink.set(false)
-        }
-    }
-}
-
-task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
-    classifier = 'javadoc'
-    from "$buildDir/dokka/javadoc"
-}
-
-publishing {
-    publications {
-        MyPublication(MavenPublication) {
-
-            artifact sourcesJar
-            artifact javadocJar
-            artifact("$buildDir/outputs/aar/xrunner-library-release.aar")
-
-            groupId publishedGroupId
-            artifactId artifact
-            version libraryVersion
-
-            pom {
-                packaging 'aar'
-                withXml {
-
-                    asNode().appendNode('name', libraryName)
-
-                    asNode().appendNode('description', libraryDescription)
-
-                    asNode().appendNode('url', siteUrl)
-
-                    // License
-                    def licensesNode = asNode().appendNode('licenses')
-                    def licenseNode = licensesNode.appendNode('license')
-                    licenseNode.appendNode('name', licenseName)
-                    licenseNode.appendNode('url', licenseUrl)
-
-                    // Git
-                    def scmNode = asNode().appendNode('scm')
-                    scmNode.appendNode('connection', gitUrl)
-                    scmNode.appendNode('developerConnection', gitUrl)
-                    scmNode.appendNode('url', siteUrl)
-
-                    def dependenciesNode = asNode().appendNode('dependencies')
-
-                    // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
-                    configurations.implementation.allDependencies.each {
-                        // Ensure dependencies such as fileTree are not included.
-                        if (it.name != 'unspecified') {
-                            def dependencyNode = dependenciesNode.appendNode('dependency')
-                            dependencyNode.appendNode('groupId', it.group)
-                            dependencyNode.appendNode('artifactId', it.name)
-                            dependencyNode.appendNode('version', it.version)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 publishToMavenLocal.dependsOn 'assembleRelease'
+apply from: "scripts/publish-module.gradle"
